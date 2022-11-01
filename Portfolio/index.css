@@ -46,7 +46,21 @@ p{
     height: 29.77vh;
     margin: 10px;
 }
-.jtbackground{
+.jtbackgroundindex{
     background: url("lemon-banner-images-d81b9e4a2f8a34b284de7f12b40f6d85.png");
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+.jtbackgroundexp{
+    background: url("IMG_2475.jpg");
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+.jtbackgroundam{
+    background: url("IMG_2005.JPG");
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+/* https://stackoverflow.com/questions/39031224/how-to-center-cards-in-bootstrap-4#:~:text=In%20bootstrap%204%2C%20to%20center,card%3E. */
+.card { 
+    margin: 0 auto; /* Added */
+    float: none; /* Added */
+    margin-bottom: 10px; /* Added */
 }
