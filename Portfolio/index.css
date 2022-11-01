@@ -64,3 +64,52 @@ p{
     float: none; /* Added */
     margin-bottom: 10px; /* Added */
 }
+.overflowvalue{
+    overflow: hidden;
+}
+/* https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Animations/Using_CSS_animations */
+.animate{
+    animation-duration: 3s;
+    animation-name: slidein;
+    animation-iteration-count: 1;
+    animation-direction: alternate;
+}
+@keyframes slidein {
+    from {
+      margin-left: 100%;
+      width: 300%;
+    }
+    75% {
+        font-size: 70%;
+        margin-left: 25%;
+        width: 70%;
+    }
+  
+    to {
+      margin-left: 0%;
+      width: 100%;
+    }
+}
+
+.animate2{
+    animation-duration: 3s;
+    animation-name: slidein2;
+    animation-iteration-count: 1;
+    animation-direction: normal;
+}
+@keyframes slidein2 {
+    from {
+      margin-right: 0%;
+      width: 300%;
+    }
+    75% {
+        font-size: 70%;
+        margin-right: 75%;
+        width: 70%;
+    }
+  
+    to {
+      margin-right: 100%;
+      width: 100%;
+    }
+}
