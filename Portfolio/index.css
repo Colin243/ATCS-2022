@@ -84,6 +84,11 @@ p{
         margin-left: 25%;
         width: 70%;
     }
+    55% {
+        font-size: 30%;
+        margin-right: 75%;
+        width: 30%;
+    }
   
     to {
       margin-left: 0%;
@@ -107,9 +112,35 @@ p{
         margin-right: 75%;
         width: 70%;
     }
-  
     to {
       margin-right: 100%;
       width: 100%;
+    }
+}
+.animate3{
+    animation-duration: 3s;
+    animation-name: slidein3;
+    animation-iteration-count: 1;
+    animation-direction: alternate;
+}
+@keyframes slidein3{
+    from {
+      margin-left: 100%;
+      width: 500%;
+    }
+    75% {
+        font-size: 45%;
+        margin-left: 25%;
+        width: 45%;
+    }
+    55% {
+        font-size: 30%;
+        margin-right: 75%;
+        width: 30%;
+    }
+  
+    to {
+      margin-left: 40%;
+      width: 20.5%;
     }
 }
