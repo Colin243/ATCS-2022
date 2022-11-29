@@ -46,3 +46,101 @@ p{
     height: 29.77vh;
     margin: 10px;
 }
+.jtbackgroundindex{
+    background: url("lemon-banner-images-d81b9e4a2f8a34b284de7f12b40f6d85.png");
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+.jtbackgroundexp{
+    background: url("IMG_2475.jpg");
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+.jtbackgroundam{
+    background: url("IMG_2005.JPG");
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+/* https://stackoverflow.com/questions/39031224/how-to-center-cards-in-bootstrap-4#:~:text=In%20bootstrap%204%2C%20to%20center,card%3E. */
+.card { 
+    margin: 0 auto; /* Added */
+    float: none; /* Added */
+    margin-bottom: 10px; /* Added */
+}
+.overflowvalue{
+    overflow: hidden;
+}
+/* https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Animations/Using_CSS_animations */
+.animate{
+    animation-duration: 3s;
+    animation-name: slidein;
+    animation-iteration-count: 1;
+    animation-direction: alternate;
+}
+@keyframes slidein {
+    from {
+      margin-left: 100%;
+      width: 300%;
+    }
+    75% {
+        font-size: 70%;
+        margin-left: 25%;
+        width: 70%;
+    }
+    55% {
+        font-size: 30%;
+        margin-right: 75%;
+        width: 30%;
+    }
+  
+    to {
+      margin-left: 0%;
+      width: 100%;
+    }
+}
+
+.animate2{
+    animation-duration: 3s;
+    animation-name: slidein2;
+    animation-iteration-count: 1;
+    animation-direction: normal;
+}
+@keyframes slidein2 {
+    from {
+      margin-right: 0%;
+      width: 300%;
+    }
+    75% {
+        font-size: 70%;
+        margin-right: 75%;
+        width: 70%;
+    }
+    to {
+      margin-right: 100%;
+      width: 100%;
+    }
+}
+.animate3{
+    animation-duration: 3s;
+    animation-name: slidein3;
+    animation-iteration-count: 1;
+    animation-direction: alternate;
+}
+@keyframes slidein3{
+    from {
+      margin-left: 100%;
+      width: 500%;
+    }
+    75% {
+        font-size: 45%;
+        margin-left: 25%;
+        width: 45%;
+    }
+    55% {
+        font-size: 30%;
+        margin-right: 75%;
+        width: 30%;
+    }
+  
+    to {
+      margin-left: 40%;
+      width: 20.5%;
+    }
+}
