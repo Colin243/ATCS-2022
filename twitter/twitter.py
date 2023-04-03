@@ -1,6 +1,7 @@
 from models import *
 from database import init_db, db_session
 from datetime import datetime
+from sqlalchemy.sql import text
 
 class Twitter:
     """
@@ -102,44 +103,52 @@ class Twitter:
     def follow(self):
         other_user_username = input("Who would you like to follow?" + "\n")
         other_user = db_session.query(User).filter(User.username == other_user_username).first()
-        
         if other_user in self.current_user.following:
                 print("You already follow @" + other_user_username)
         elif not other_user:
             print("User @" + other_user_username + " does not exist")
         else:
             print("You are now following @" + other_user_username)
-            self.current_user.following.append(other_user)
+            db_session.add(Follower(follower_id = self.current_user.username, following_id = other_user_username))
+        db_session.commit()
             
 
     def unfollow(self):
-        other_user_username = input("Who would you like to follow?" + "\n")
-        other_user = db_session.query(User).filter(User.username == other_user_username).first()
-        
-        if other_user in self.current_user.following:
-                print("You are no longer following @" + other_user_username)
-                self.current_user.following.remove(other_user)
-
-        elif not other_user:
-            print("User @" + other_user_username + " does not exist")
+        following_username = input("Who would you like to unfollow\n")
+        followed = db_session.query(Follower).where((Follower.follower_id==self.current_user.username) & (Follower.following_id==following_username)).first()
+        if followed is not None:
+            db_session.delete(followed)
+            print("\n\nYou unfollowed @" + following_username)
         else:
-            print("You don't follow @" + other_user_username)
+            print("You dont follow @" + following_username)
+        db_session.commit()
 
     def tweet(self):
         message = input("Create Tweet: ")
         tags = input("Enter your tags separated by spaces: ").split()
-        for tag in tags:
-            newTag = Tag(tag)
-            db_session.add(newTag)
-        db_session.commit()
         new_tweet = Tweet(message, datetime.now(), self.current_user.username)
         db_session.add(new_tweet)
         db_session.commit()
-
-    
+        alltags = db_session.query(Tag).all()
+        for tag in tags:
+            exists = False
+            if len(alltags) > 0:
+                for existtag in alltags:
+                    if existtag.content == tag:
+                        exists = True
+                        tag_id = existtag.id
+                    if exists:
+                        db_session.add(TweetTag(new_tweet.id, tag_id))
+                        db_session.commit()
+            else:
+                newTag = Tag(tag)
+                db_session.add(newTag)
+                db_session.commit()
+                db_session.add(TweetTag(new_tweet.id, newTag.id))
+                db_session.commit()  
     def view_my_tweets(self):
-        my_tweets = db_session.query(Tweet).where(Tweet.username == self.current_user.username)
-        self.print_tweets(self.current_user, my_tweets)
+        my_tweets = db_session.query(Tweet).where(Tweet.username == self.current_user.username).all()
+        self.print_tweets(my_tweets)
     
     """
     Prints the 5 most recent tweets of the 
@@ -155,16 +164,18 @@ class Twitter:
         user = db_session.query(User).where(User.username == username).first()
         if (user):
             user_tweets = db_session.query(Tweet).where(Tweet.username == username)
-            self.print_tweets(user, user_tweets)
+            self.print_tweets(user_tweets)
         else:
             print("There is no user by that name.")
 
+
     def search_by_tag(self):
         tag = input("Tag: ")
-        check_tag = db_session.query(Tag).where(Tag.content == tag)
+        check_tag = db_session.query(Tag.id).where(Tag.content == tag)
         if check_tag:
-            
-            tagged_tweets = db_session.query(Tweet).where(Tweet.tag == tag)
+            tagged_tweets = db_session.query(TweetTag.tweet_id).where(Tweet.id == check_tag)
+            tweets = db_session.query(Tweet).where(Tweet.id == tagged_tweets)
+            self.print_tweets(tweets)
         else:
             print("There is no tweets with this tag.")
 
@@ -181,7 +192,6 @@ class Twitter:
         while(self.logged_in == True):
             self.print_menu()
             option = int(input(""))
-
             if option == 1:
                 self.view_feed()
             elif option == 2:
