@@ -11,6 +11,7 @@ class Twitter:
         self.logged_in = False
         self.handle = None
         self.current_user = None
+
     def print_menu(self):
         print("\nPlease select a menu option:")
         print("1. View Feed")
@@ -43,38 +44,38 @@ class Twitter:
     is guaranteed to be logged in after this function.
     """
     def register_user(self):
-            while (registered == False):
-                init_pass = None
-                registered = False
-                handle = input("What will your twitter handle be? ")
-                init_pass = input("Enter a password: ")
-                check_pass = input("Re-enter the password: ")
-                existing_user = db_session.query(User.username).filter(User.username == handle).first()
-                if (existing_user):
-                    print("This handle is taken.")
-                if (init_pass != check_pass):
-                    print("The passwords don't match.")
-                if (not(existing_user) & (init_pass == check_pass)):
-                    registered = True
-                    final_pass = init_pass
-                if (registered == True):
-                    print("Welcome: " + handle)
-                    new_user = User(handle, final_pass)
-                    db_session.add(new_user)
-                    db_session.commit()
-                   
+        registered = False
+        while (registered == False):
+            handle = input("What will your twitter handle be? ")
+            init_pass = input("Enter a password: ")
+            check_pass = input("Re-enter the password: ")
+            existing_user = db_session.query(User).filter(User.username == handle).first()
+            if (existing_user):
+                print("This handle is taken.")
+            elif (init_pass != check_pass):
+                print("The passwords don't match.")
+            else:
+                registered = True
+                final_pass = init_pass
+        print("Welcome: " + handle)
+        new_user = User(username = handle, password = final_pass)
+        db_session.add(new_user)
+        db_session.commit()         
+                  
     """
     Logs the user in. The user
     is guaranteed to be logged in after this function.
     """
     def login(self):
-        username_check,password_check = None
+        username_check = None
+        password_check = None
         while (self.logged_in == False):
             username_check = input("Username: ")
             password_check = input("Password: ")
             user = db_session.query(User).filter((User.username == username_check) & (User.password == password_check)).first()
             if(user):
                 self.logged_in = True
+                self.current_user = user
             else:
                 print("Invalid username or password")
 
@@ -90,46 +91,83 @@ class Twitter:
     def startup(self):
         user_input = input("Welcome to ATCS Twitter" + "\n" + "Please select a menu option" + "\n" + 
                             "1. Login" + "\n" + "2. Register" + "\n" + "0. Exit")
-        if user_input == 1:
+        if user_input == "1":
             self.login()
-        elif user_input == 2:
+        elif user_input == "2":
             self.register_user()
-        elif user_input == 0:
+        elif user_input == "0":
             self.end()
         
 
     def follow(self):
-        other_user = input("Who would you like to follow?" + "\n")
-        following_user = False
-        for following in self.current_user.followings:
-            if following.username == other_user:
-                print("You already follow" + other_user)
-                following_user = True
-        if following_user == False:
-            user = db_session.query(User).filter(User.username == other_user).first()
-            self.current_user.following.append(user)
+        other_user_username = input("Who would you like to follow?" + "\n")
+        other_user = db_session.query(User).filter(User.username == other_user_username).first()
+        
+        if other_user in self.current_user.following:
+                print("You already follow @" + other_user_username)
+        elif not other_user:
+            print("User @" + other_user_username + " does not exist")
+        else:
+            print("You are now following @" + other_user_username)
+            self.current_user.following.append(other_user)
+            
 
     def unfollow(self):
-        pass
+        other_user_username = input("Who would you like to follow?" + "\n")
+        other_user = db_session.query(User).filter(User.username == other_user_username).first()
+        
+        if other_user in self.current_user.following:
+                print("You are no longer following @" + other_user_username)
+                self.current_user.following.remove(other_user)
+
+        elif not other_user:
+            print("User @" + other_user_username + " does not exist")
+        else:
+            print("You don't follow @" + other_user_username)
 
     def tweet(self):
-        pass
+        message = input("Create Tweet: ")
+        tags = input("Enter your tags separated by spaces: ").split()
+        for tag in tags:
+            newTag = Tag(tag)
+            db_session.add(newTag)
+        db_session.commit()
+        new_tweet = Tweet(message, datetime.now(), self.current_user.username)
+        db_session.add(new_tweet)
+        db_session.commit()
+
     
     def view_my_tweets(self):
-        pass
+        my_tweets = db_session.query(Tweet).where(Tweet.username == self.current_user.username)
+        self.print_tweets(self.current_user, my_tweets)
     
     """
     Prints the 5 most recent tweets of the 
     people the user follows
     """
     def view_feed(self):
-        pass
+        following_usernames = [user.username for user in self.current_user.following]
+        tweets = db_session.query(Tweet).where(Tweet.username.in_(following_usernames)).order_by(Tweet.timestamp).limit(5).all()
+        self.print_tweets(tweets)
 
     def search_by_user(self):
-        pass
+        username = input("Username: ")
+        user = db_session.query(User).where(User.username == username).first()
+        if (user):
+            user_tweets = db_session.query(Tweet).where(Tweet.username == username)
+            self.print_tweets(user, user_tweets)
+        else:
+            print("There is no user by that name.")
 
     def search_by_tag(self):
-        pass
+        tag = input("Tag: ")
+        check_tag = db_session.query(Tag).where(Tag.content == tag)
+        if check_tag:
+            
+            tagged_tweets = db_session.query(Tweet).where(Tweet.tag == tag)
+        else:
+            print("There is no tweets with this tag.")
+
 
     """
     Allows the user to select from the 
@@ -137,10 +175,10 @@ class Twitter:
     """
     def run(self):
         init_db()
-        if(self.logged_in == True):
-            print("Welcome to ATCS Twitter!")
-            self.startup()
 
+        print("Welcome to ATCS Twitter!")
+        self.startup()
+        while(self.logged_in == True):
             self.print_menu()
             option = int(input(""))
 
